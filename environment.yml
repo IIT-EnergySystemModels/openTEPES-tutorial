@@ -2,7 +2,6 @@ name: openTEPES-tutorial
 dependencies:
           - python =3.8
           - altair
-          - gurobi
           - matplotlib
           - numpy
           - pandas
@@ -14,3 +13,4 @@ dependencies:
           - vega_datasets
           - pip:
               - openTEPES
+              - gurobi
