@@ -11,3 +11,5 @@ dependencies:
           - rise
           - vega
           - vega_datasets
+          - pip:
+              - openTEPES
