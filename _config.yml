@@ -1,0 +1,6 @@
+# Book settings
+title: openTEPES Tutorial
+author: Andres Ramos Galan and Erik F. Alvarez
+logo: 'images/openTEPES.png'
+repository:
+    url: "https://github.com/IIT-EnergySystemModels/openTEPES-tutorial"
