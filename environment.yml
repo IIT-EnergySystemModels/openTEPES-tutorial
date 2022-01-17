@@ -6,7 +6,6 @@ dependencies:
           - altair
           - matplotlib
           - numpy
-          - openTEPES
           - pandas
           - psutil
           - pyomo
