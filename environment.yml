@@ -2,6 +2,7 @@ name: openTEPES-tutorial
 dependencies:
           - python =3.8
           - altair
+          - gurobi
           - matplotlib
           - numpy
           - pandas
