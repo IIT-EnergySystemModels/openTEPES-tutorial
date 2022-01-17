@@ -1,0 +1,15 @@
+name: openTEPES-tutorial
+channels:
+          - conda-forge
+dependencies:
+          - python
+          - altair
+          - matplotlib
+          - numpy
+          - openTEPES
+          - pandas
+          - psutil
+          - pyomo
+          - rise
+          - vega
+          - vega_datasets
