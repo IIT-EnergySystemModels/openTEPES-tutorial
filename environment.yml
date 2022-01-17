@@ -5,6 +5,7 @@ dependencies:
           - matplotlib
           - numpy
           - pandas
+          - pip
           - psutil
           - pyomo
           - rise
