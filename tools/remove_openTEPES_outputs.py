@@ -1,5 +1,5 @@
 """
-Tool to remove vegalite outputs from a notebook.
+Tool to remove openTEPES outputs from a notebook.
 For notebooks with a lot of embedded data, this helps keep the notebook size
 manageable.
 """
