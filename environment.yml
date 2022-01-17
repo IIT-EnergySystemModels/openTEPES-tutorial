@@ -13,4 +13,3 @@ dependencies:
           - vega_datasets
           - pip:
               - openTEPES
-              - gurobi
