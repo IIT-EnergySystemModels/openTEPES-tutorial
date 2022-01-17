@@ -11,5 +11,3 @@ dependencies:
           - rise
           - vega
           - vega_datasets
-          - pip:
-              - scipy
