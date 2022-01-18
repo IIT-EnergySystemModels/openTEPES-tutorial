@@ -1,14 +1,9 @@
 name: openTEPES-tutorial
-channel:
-#  - defaults
-#  - conda-forge
-  - gurobi
 dependencies:
           - python =3.8
           - altair
           - cartopy
           - coincbc
-          - gurobi
           - matplotlib
           - numpy
           - pandas
