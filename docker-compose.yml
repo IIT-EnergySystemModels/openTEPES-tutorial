@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  gurobi:
+    image: gurobi/python:latest
+    environment:
+      - GRB_CLIENT_LOG=3
+    volumes:
+      - ./notebooks:/notebooks
+      - ./gurobi.lic:/opt/gurobi/gurobi.lic:ro
