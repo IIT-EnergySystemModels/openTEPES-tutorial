@@ -2,6 +2,8 @@ name: openTEPES-tutorial
 dependencies:
           - python =3.8
           - altair
+          - cartopy
+          - coincbc
           - matplotlib
           - numpy
           - pandas
