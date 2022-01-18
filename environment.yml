@@ -15,5 +15,6 @@ dependencies:
           - vega
           - vega_datasets
           - pip:
+              - docker
               - openTEPES
               - scipy
