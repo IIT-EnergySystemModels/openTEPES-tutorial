@@ -1,7 +1,7 @@
 name: openTEPES-tutorial
 channel:
-  - defaults
-  - conda-forge
+#  - defaults
+#  - conda-forge
   - gurobi
 dependencies:
           - python =3.8
