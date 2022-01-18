@@ -8,6 +8,7 @@ dependencies:
           - pip
           - psutil
           - pyomo
+          - pyscipopt
           - rise
           - vega
           - vega_datasets
