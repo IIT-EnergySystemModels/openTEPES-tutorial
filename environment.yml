@@ -11,6 +11,8 @@ dependencies:
           - psutil
           - pyomo
           - pyscipopt
+          - scikit-learn
+          - scikit-learn-extra
           - rise
           - vega
           - vega_datasets
