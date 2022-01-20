@@ -4,10 +4,12 @@ dependencies:
           - altair
           - cartopy
           - coincbc
+          - colour
           - matplotlib
           - numpy
           - pandas
           - pip
+          - plotly
           - psutil
           - pyomo
           - pyscipopt
