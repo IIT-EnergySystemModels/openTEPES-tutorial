@@ -2,7 +2,7 @@
 openTEPES' Exploratory Execution 
 ![openTEPES gallery](notebooks/openTEPES-gallery.png)
 
-We are glad to welcome you to the openTEPES-tutorial! Here you will find some material that will help you to interact easily and explore the man functionalities of the openTEPES model. 
+We are glad to welcome you to the openTEPES-tutorial! Here you will find some material that will help you to interact easily and explore the main functionalities of the openTEPES model. 
 
 An overview of the content can be found at [notebooks/Index.ipynb](notebooks/Index.ipynb).
 
