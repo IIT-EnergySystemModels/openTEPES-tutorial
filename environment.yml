@@ -5,6 +5,7 @@ dependencies:
           - cartopy
           - coincbc
           - colour
+          - glpk
           - matplotlib
           - numpy
           - pandas
