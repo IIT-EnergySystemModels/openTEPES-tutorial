@@ -4,7 +4,7 @@ openTEPES' Exploratory Execution
 
 We are glad to welcome you to the openTEPES-tutorial! Here you will find some material that will help you to interact easily and explore the main functionalities of the openTEPES model. 
 
-An overview of the content can be found at [notebooks/Index.ipynb](notebooks/Index.ipynb).
+An overview of the content can be found at [notebooks/00-index.ipynb](notebooks/Index.ipynb).
 
 The detailed information about the model is on [readthedocs](https://opentepes.readthedocs.io/en/latest/index.html).
 
