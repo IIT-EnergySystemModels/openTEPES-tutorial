@@ -6,7 +6,7 @@ We are glad to welcome you to the openTEPES-tutorial! Here you will find some ma
 
 An overview of the content can be found at [notebooks/Index.ipynb](notebooks/Index.ipynb).
 
-The detailed information about the model is on [readthedocs](https://opentepes.readthedocs.io/_/downloads/en/latest/pdf/).
+The detailed information about the model is on [readthedocs](https://opentepes.readthedocs.io/en/latest/index.html).
 
 [comment]: <> (The workshop was recorded and is available [on YouTube]&#40;https://www.youtube.com/watch?v=ms29ZPUKxbU&#41;)
 
