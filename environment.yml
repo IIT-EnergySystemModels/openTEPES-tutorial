@@ -1,6 +1,6 @@
 name: openTEPES-tutorial
 dependencies:
-          - python =3.12.*
+          - python >= 3.12
           - altair
           - cartopy
           - coincbc
