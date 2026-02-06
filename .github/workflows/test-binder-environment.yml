@@ -72,13 +72,15 @@ jobs:
           print('Python:', sys.version)
           print('Testing core dependencies...')
           
+          failed = []
+          
           # Test openTEPES
           try:
               import openTEPES
               print('✓ openTEPES imported successfully')
           except Exception as e:
               print(f'✗ openTEPES import failed: {e}')
-              sys.exit(1)
+              failed.append('openTEPES')
           
           # Test tsam
           try:
@@ -86,7 +88,7 @@ jobs:
               print('✓ tsam imported successfully')
           except Exception as e:
               print(f'✗ tsam import failed: {e}')
-              sys.exit(1)
+              failed.append('tsam')
           
           # Test highspy
           try:
@@ -94,7 +96,7 @@ jobs:
               print('✓ highspy imported successfully')
           except Exception as e:
               print(f'✗ highspy import failed: {e}')
-              sys.exit(1)
+              failed.append('highspy')
           
           # Test scikit-learn-extra
           try:
@@ -102,9 +104,13 @@ jobs:
               print('✓ scikit-learn-extra imported successfully')
           except Exception as e:
               print(f'✗ scikit-learn-extra import failed: {e}')
-              sys.exit(1)
+              failed.append('scikit-learn-extra')
           
-          print('All core dependencies are working!')
+          if failed:
+              print(f'\n❌ {len(failed)} package(s) failed to import: {", ".join(failed)}')
+              sys.exit(1)
+          else:
+              print('\n✅ All core dependencies are working!')
           EOF
       
       - name: Summary
