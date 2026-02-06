@@ -6,9 +6,9 @@ dependencies:
   - pip
   - glpk
   - coincbc
+  - scikit-learn-extra
+  - rise
   - pip:
     - openTEPES
     - tsam
     - highspy
-    - scikit-learn-extra
-    - rise
