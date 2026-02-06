@@ -4,27 +4,18 @@ channels:
   - defaults
 dependencies:
   - python=3.12
-  - altair
-  - coincbc
-  - colour
-  - glpk
-  - matplotlib
-  - numpy
-  - pandas
   - pip
-  - plotly
-  - psutil
-  - pyomo
-  - scikit-learn
-  - scikit-learn-extra
-  - scipy
-  - duckdb
-  - streamlit
+  - glpk
+  - coincbc
   - rise
-  - vega
-  - vega_datasets
-  - jupyter-book
+  - numpy<2
+  - scipy
+  - pandas
+  - matplotlib
+  - scikit-learn
   - pip:
+    - numpy<2
     - openTEPES
     - tsam
     - highspy
+    - scikit-learn-extra
