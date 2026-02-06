@@ -17,6 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Test Binder Environment Build
     
+    permissions:
+      contents: read
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
