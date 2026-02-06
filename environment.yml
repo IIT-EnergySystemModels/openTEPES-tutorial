@@ -9,6 +9,10 @@ dependencies:
   - coincbc
   - rise
   - numpy<2
+  - scipy
+  - pandas
+  - matplotlib
+  - scikit-learn
   - pip:
     - openTEPES
     - tsam
