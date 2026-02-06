@@ -7,9 +7,15 @@ dependencies:
   - pip
   - glpk
   - coincbc
-  - scikit-learn-extra
   - rise
+  - numpy<2
+  - scipy
+  - pandas
+  - matplotlib
+  - scikit-learn
   - pip:
+    - numpy<2
     - openTEPES
     - tsam
     - highspy
+    - scikit-learn-extra
