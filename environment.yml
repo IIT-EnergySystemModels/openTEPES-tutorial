@@ -8,6 +8,7 @@ dependencies:
   - glpk
   - coincbc
   - rise
+  - numpy<2
   - pip:
     - openTEPES
     - tsam
