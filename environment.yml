@@ -1,26 +1,30 @@
 name: openTEPES-tutorial
+channels:
+  - conda-forge
+  - defaults
 dependencies:
-          - python = 3.12.*
-          - altair
-          - cartopy
-          - coincbc
-          - colour
-          - glpk
-          - matplotlib
-          - numpy
-          - pandas
-          - pip
-          - plotly
-          - psutil
-          - pyomo
-          - pyscipopt
-          - scikit-learn
-          - scikit-learn-extra
-          - rise
-          - vega
-          - vega_datasets
-          - pip:
-              - docker
-              - openTEPES
-              - scipy
-              - highspy
+  - python=3.12
+  - altair
+  - coincbc
+  - colour
+  - glpk
+  - matplotlib
+  - numpy
+  - pandas
+  - pip
+  - plotly
+  - psutil
+  - pyomo
+  - scikit-learn
+  - scikit-learn-extra
+  - scipy
+  - duckdb
+  - streamlit
+  - rise
+  - vega
+  - vega_datasets
+  - jupyter-book
+  - pip:
+    - openTEPES
+    - tsam
+    - highspy
