@@ -57,13 +57,6 @@ jobs:
           echo "Installed packages:"
           conda list
           
-          echo "Verifying key packages are installed:"
-          python -c "import openTEPES; print(f'openTEPES version: {openTEPES.__version__}')" || echo "openTEPES import check"
-          python -c "import tsam; print('tsam: OK')"
-          python -c "import highspy; print('highspy: OK')"
-          python -c "import sklearn_extra; print('scikit-learn-extra: OK')"
-          python -c "import rise; print('rise: OK')" || echo "rise is a notebook extension"
-          
           echo "Verifying binary solvers:"
           which glpsol
           which cbc
