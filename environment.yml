@@ -8,14 +8,13 @@ dependencies:
   - glpk
   - coincbc
   - rise
-  - numpy<2
   - scipy
   - pandas
   - matplotlib
   - scikit-learn
   - pip:
-    - numpy<2
-    - openTEPES
     - tsam
     - highspy
-    - scikit-learn-extra
+# openTEPES itself is installed from the git submodule (external/openTEPES) by the
+# postBuild script, in editable mode, so the tutorial uses the repository version
+# instead of the PyPI release.
