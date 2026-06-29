@@ -12,6 +12,7 @@ on:
       - 'postBuild'
       - '.gitmodules'
       - '.dockerignore'
+      - 'notebooks/**'
       - '.github/workflows/test-binder-environment.yml'
   push:
     branches:
@@ -21,6 +22,7 @@ on:
       - 'postBuild'
       - '.gitmodules'
       - '.dockerignore'
+      - 'notebooks/**'
       - '.github/workflows/test-binder-environment.yml'
 
 jobs:
@@ -48,14 +50,19 @@ jobs:
         run: |
           jupyter-repo2docker --no-run --image-name opentepes-tutorial:ci .
 
-      - name: Run the demo notebook inside the built image
+      - name: Run the tutorial notebooks inside the built image
         run: |
+          # Execute the notebooks in the built image so a notebook that no longer
+          # runs is caught. 1.3 and 3.1 are left out for now (3.1 writes back into
+          # the case folder and runs a clustering step); they need their own rework.
           jupyter-repo2docker --image-name opentepes-tutorial:ci . \
-            jupyter nbconvert --to notebook --execute \
-              --ExecutePreprocessor.timeout=600 \
-              --output /tmp/executed-demo.ipynb \
-              notebooks/01-openTEPES-Demo.ipynb
+            bash -lc 'jupyter nbconvert --to notebook --execute \
+              --ExecutePreprocessor.timeout=900 --output-dir /tmp/executed \
+              notebooks/0*.ipynb \
+              notebooks/2.1-Comparison.ipynb \
+              notebooks/4.*.ipynb \
+              notebooks/5.*.ipynb'
 
       - name: Summary
         if: success()
-        run: echo "Binder image built with repo2docker and the demo notebook ran successfully."
+        run: echo "Binder image built with repo2docker and the tutorial notebooks ran successfully."
