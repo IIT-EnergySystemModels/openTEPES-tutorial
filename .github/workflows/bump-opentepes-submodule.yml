@@ -1,0 +1,89 @@
+name: Bump openTEPES submodule
+
+# Keep the external/openTEPES gitlink from drifting behind the live model.
+# On a schedule, move the gitlink to the current openTEPES master tip, build
+# the Binder image and run every tutorial notebook against it, and — only if
+# that passes — open a pull request. A human reviews and merges; nothing is
+# merged automatically, because mybinder.org has tighter build limits than the
+# CI runner, so a green build here does not by itself prove mybinder works.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # every Monday 06:00 UTC
+  workflow_dispatch:        # allow a manual run from the Actions tab
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    name: Bump the openTEPES gitlink and validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Move the gitlink to openTEPES master tip
+        id: bump
+        run: |
+          # --remote follows the branch declared in .gitmodules (master).
+          git submodule update --remote --recursive external/openTEPES
+          if git diff --quiet external/openTEPES; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Already at master tip; nothing to bump."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "new_sha=$(git -C external/openTEPES rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python
+        if: steps.bump.outputs.changed == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install jupyter-repo2docker
+        if: steps.bump.outputs.changed == 'true'
+        run: pip install jupyter-repo2docker
+
+      # Build and execute against the bumped working tree (repo2docker builds the
+      # local context, so it picks up the new submodule commit without a push).
+      # Keep this notebook list in sync with test-binder-environment.yml.
+      - name: Build the Binder image and run the notebooks
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          jupyter-repo2docker --no-run --image-name opentepes-tutorial:bump .
+          jupyter-repo2docker --image-name opentepes-tutorial:bump . \
+            bash -lc 'jupyter nbconvert --to notebook --execute \
+              --ExecutePreprocessor.timeout=900 --output-dir /tmp/executed \
+              notebooks/0*.ipynb \
+              notebooks/1.3-openTEPES-Running-StepByStep.ipynb \
+              notebooks/2.1-Comparison.ipynb \
+              notebooks/3.1-LoadLevelAggregation_TSAM.ipynb \
+              notebooks/4.*.ipynb \
+              notebooks/5.*.ipynb'
+
+      - name: Open a pull request with the bump
+        if: steps.bump.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: auto/bump-opentepes
+          delete-branch: true
+          title: "Bump openTEPES submodule to ${{ steps.bump.outputs.new_sha }}"
+          commit-message: "Bump openTEPES submodule to master tip ${{ steps.bump.outputs.new_sha }}"
+          body: |
+            Scheduled bump of the `external/openTEPES` gitlink to the current master tip
+            (`${{ steps.bump.outputs.new_sha }}`).
+
+            The Binder image was built and all tutorial notebooks were executed against
+            this commit in the scheduled run before this PR was opened.
+
+            The committed notebooks keep the outputs from their last manual run, so
+            their embedded numbers are not refreshed by this bump — re-run them locally
+            if you want the displayed results to match the new openTEPES.
+
+            Note: mybinder.org has tighter build limits than the CI runner, so a green
+            build here does not guarantee mybinder works. Keep the image small.

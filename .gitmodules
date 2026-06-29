@@ -1,3 +1,4 @@
 [submodule "external/openTEPES"]
 	path = external/openTEPES
 	url = https://github.com/IIT-EnergySystemModels/openTEPES.git
+	branch = master
