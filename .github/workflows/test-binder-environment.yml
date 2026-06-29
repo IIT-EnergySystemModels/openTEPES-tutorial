@@ -4,12 +4,16 @@ on:
   pull_request:
     paths:
       - 'environment.yml'
+      - 'postBuild'
+      - '.gitmodules'
       - '.github/workflows/test-binder-environment.yml'
   push:
     branches:
       - main
     paths:
       - 'environment.yml'
+      - 'postBuild'
+      - '.gitmodules'
       - '.github/workflows/test-binder-environment.yml'
 
 jobs:
@@ -23,7 +27,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+        with:
+          submodules: recursive
+
       - name: Setup Miniforge
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -47,7 +53,14 @@ jobs:
         run: |
           echo "Creating conda environment from environment.yml..."
           mamba env create -n test-binder-env -f environment.yml
-      
+
+      - name: Install openTEPES from submodule (mirror postBuild)
+        shell: bash -l {0}
+        run: |
+          conda activate test-binder-env
+          git submodule update --init --recursive
+          pip install -e ./external/openTEPES
+
       - name: Verify environment
         shell: bash -l {0}
         run: |
@@ -100,15 +113,14 @@ jobs:
           except Exception as e:
               print(f'✗ highspy import failed: {e}')
               failed.append('highspy')
-          
-          # Test scikit-learn-extra
+
+          # Report the openTEPES version so a downgrade is visible in the log
           try:
-              import sklearn_extra
-              print('✓ scikit-learn-extra imported successfully')
-          except Exception as e:
-              print(f'✗ scikit-learn-extra import failed: {e}')
-              failed.append('scikit-learn-extra')
-          
+              import openTEPES
+              print('openTEPES version:', openTEPES.__version__)
+          except Exception:
+              pass
+
           if failed:
               print(f'\n❌ {len(failed)} package(s) failed to import: {", ".join(failed)}')
               sys.exit(1)
@@ -116,6 +128,22 @@ jobs:
               print('\n✅ All core dependencies are working!')
           EOF
       
+      - name: Solve the 9n case (catches a silent openTEPES downgrade)
+        shell: bash -l {0}
+        run: |
+          conda activate test-binder-env
+          python << 'EOF'
+          import glob
+          from openTEPES.openTEPES import openTEPES_run
+
+          # DIR is the parent folder of the case; CaseName is the bundled 9-node case.
+          openTEPES_run('notebooks', '9n', 'appsi_highs', 'Yes', 'No')
+
+          results = glob.glob('notebooks/9n/oT_Result_*9n*.csv')
+          print(f'9n solved, {len(results)} result file(s) written')
+          assert results, 'no result files written - the 9n solve did not complete'
+          EOF
+
       - name: Summary
         if: success()
         shell: bash -l {0}

@@ -1,0 +1,16 @@
+#!/bin/bash
+# Binder (repo2docker) runs this after the conda environment is built.
+# It installs openTEPES straight from the bundled git submodule (external/openTEPES),
+# in editable mode, so the tutorial always uses the repository version rather than
+# the PyPI release, and users can read or edit the model source.
+set -euo pipefail
+
+# Pull the submodule at the commit pinned by this repo (no-op if already present).
+git submodule update --init --recursive
+
+# Editable install. Must happen here, not in environment.yml: at environment-build
+# time the submodule directory is still empty, because postBuild runs afterwards.
+pip install -e ./external/openTEPES
+
+echo "openTEPES installed from submodule:"
+python -c "import openTEPES; print('  version', openTEPES.__version__)"
