@@ -53,13 +53,15 @@ jobs:
       - name: Run the tutorial notebooks inside the built image
         run: |
           # Execute the notebooks in the built image so a notebook that no longer
-          # runs is caught. 1.3 and 3.1 are left out for now (3.1 writes back into
-          # the case folder and runs a clustering step); they need their own rework.
+          # runs is caught. Each notebook writes into a work_*/ copy of the case,
+          # so the committed cases are never changed.
           jupyter-repo2docker --image-name opentepes-tutorial:ci . \
             bash -lc 'jupyter nbconvert --to notebook --execute \
               --ExecutePreprocessor.timeout=900 --output-dir /tmp/executed \
               notebooks/0*.ipynb \
+              notebooks/1.3-openTEPES-Running-StepByStep.ipynb \
               notebooks/2.1-Comparison.ipynb \
+              notebooks/3.1-LoadLevelAggregation_TSAM.ipynb \
               notebooks/4.*.ipynb \
               notebooks/5.*.ipynb'
 
