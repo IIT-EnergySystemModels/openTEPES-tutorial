@@ -5,8 +5,12 @@
 # the PyPI release, and users can read or edit the model source.
 set -euo pipefail
 
-# Pull the submodule at the commit pinned by this repo (no-op if already present).
-git submodule update --init --recursive
+# Binder's content provider already checks out the submodule, so its files are present.
+# Only initialise it if they are missing (e.g. a clone made without --recurse-submodules).
+# Doing this unconditionally would fail when the build context has no .git directory.
+if [ ! -f external/openTEPES/pyproject.toml ]; then
+    git submodule update --init --recursive
+fi
 
 # Editable install. Must happen here, not in environment.yml: at environment-build
 # time the submodule directory is still empty, because postBuild runs afterwards.

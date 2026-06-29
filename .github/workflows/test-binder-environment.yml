@@ -1,4 +1,9 @@
-name: Test Binder Environment
+name: Test Binder Build
+
+# Build the repository the same way mybinder.org does, with repo2docker, so a
+# broken environment.yml, postBuild, or submodule is caught before users hit it.
+# The plain conda build used before did not go through repo2docker and missed,
+# for example, the Anaconda "defaults" channel terms-of-service failure.
 
 on:
   pull_request:
@@ -6,6 +11,7 @@ on:
       - 'environment.yml'
       - 'postBuild'
       - '.gitmodules'
+      - '.dockerignore'
       - '.github/workflows/test-binder-environment.yml'
   push:
     branches:
@@ -14,140 +20,42 @@ on:
       - 'environment.yml'
       - 'postBuild'
       - '.gitmodules'
+      - '.dockerignore'
       - '.github/workflows/test-binder-environment.yml'
 
 jobs:
-  test-binder-build:
+  binder-build:
     runs-on: ubuntu-latest
-    name: Test Binder Environment Build
-    
+    name: Build the Binder image with repo2docker
     permissions:
       contents: read
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Setup Miniforge
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          miniforge-variant: Miniforge3
-          miniforge-version: latest
-          use-mamba: true
-          python-version: "3.12"
-          channels: conda-forge,defaults
-          channel-priority: flexible
-      
-      - name: Display environment info
-        shell: bash -l {0}
-        run: |
-          conda info
-          conda list
-          conda config --show-sources
-          conda config --show channels
-      
-      - name: Create environment from environment.yml
-        shell: bash -l {0}
-        run: |
-          echo "Creating conda environment from environment.yml..."
-          mamba env create -n test-binder-env -f environment.yml
+          python-version: '3.12'
 
-      - name: Install openTEPES from submodule (mirror postBuild)
-        shell: bash -l {0}
+      - name: Install jupyter-repo2docker
+        run: pip install jupyter-repo2docker
+
+      - name: Build the Binder image (same path mybinder.org uses)
         run: |
-          conda activate test-binder-env
-          git submodule update --init --recursive
-          pip install -e ./external/openTEPES
+          jupyter-repo2docker --no-run --image-name opentepes-tutorial:ci .
 
-      - name: Verify environment
-        shell: bash -l {0}
+      - name: Run the demo notebook inside the built image
         run: |
-          echo "Activating environment..."
-          conda activate test-binder-env
-          
-          echo "Python version:"
-          python --version
-          
-          echo "Installed packages:"
-          conda list
-          
-          echo "Verifying binary solvers:"
-          which glpsol
-          which cbc
-          
-          echo "Environment created successfully!"
-      
-      - name: Test basic imports and functionality
-        shell: bash -l {0}
-        run: |
-          conda activate test-binder-env
-          python << 'EOF'
-          import sys
-          print('Python:', sys.version)
-          print('Testing core dependencies...')
-          
-          failed = []
-          
-          # Test openTEPES
-          try:
-              import openTEPES
-              print('✓ openTEPES imported successfully')
-          except Exception as e:
-              print(f'✗ openTEPES import failed: {e}')
-              failed.append('openTEPES')
-          
-          # Test tsam
-          try:
-              import tsam
-              print('✓ tsam imported successfully')
-          except Exception as e:
-              print(f'✗ tsam import failed: {e}')
-              failed.append('tsam')
-          
-          # Test highspy
-          try:
-              import highspy
-              print('✓ highspy imported successfully')
-          except Exception as e:
-              print(f'✗ highspy import failed: {e}')
-              failed.append('highspy')
-
-          # Report the openTEPES version so a downgrade is visible in the log
-          try:
-              import openTEPES
-              print('openTEPES version:', openTEPES.__version__)
-          except Exception:
-              pass
-
-          if failed:
-              print(f'\n❌ {len(failed)} package(s) failed to import: {", ".join(failed)}')
-              sys.exit(1)
-          else:
-              print('\n✅ All core dependencies are working!')
-          EOF
-      
-      - name: Solve the 9n case (catches a silent openTEPES downgrade)
-        shell: bash -l {0}
-        run: |
-          conda activate test-binder-env
-          python << 'EOF'
-          import glob
-          from openTEPES.openTEPES import openTEPES_run
-
-          # DIR is the parent folder of the case; CaseName is the bundled 9-node case.
-          openTEPES_run('notebooks', '9n', 'appsi_highs', 'Yes', 'No')
-
-          results = glob.glob('notebooks/9n/oT_Result_*9n*.csv')
-          print(f'9n solved, {len(results)} result file(s) written')
-          assert results, 'no result files written - the 9n solve did not complete'
-          EOF
+          jupyter-repo2docker --image-name opentepes-tutorial:ci . \
+            jupyter nbconvert --to notebook --execute \
+              --ExecutePreprocessor.timeout=600 \
+              --output /tmp/executed-demo.ipynb \
+              notebooks/01-openTEPES-Demo.ipynb
 
       - name: Summary
         if: success()
-        shell: bash -l {0}
-        run: |
-          echo "✅ Binder environment build test PASSED"
-          echo "The environment.yml configuration is valid and all dependencies can be installed."
-          echo "This indicates that Binder should be able to build this environment successfully."
+        run: echo "Binder image built with repo2docker and the demo notebook ran successfully."
