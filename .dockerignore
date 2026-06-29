@@ -69,3 +69,15 @@ dmypy.json
 .pyre/
 desktop.ini
 .DS_Store
+
+# Trim the openTEPES submodule down to what the editable install needs
+# (pyproject.toml + the openTEPES/ Python package). Its bundled example cases,
+# case studies, docs and tests are large (~700 MB) and unused by the tutorial,
+# which has its own cases under notebooks/. Keeping them out of the build context
+# keeps the Binder image small enough for mybinder.org's build limits.
+external/openTEPES/openTEPES/cases/
+external/openTEPES/case_studies/
+external/openTEPES/doc/
+external/openTEPES/tests/
+external/openTEPES/scripts/
+external/openTEPES/.github/
