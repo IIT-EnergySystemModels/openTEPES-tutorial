@@ -22,7 +22,7 @@ jobs:
     name: Bump the openTEPES gitlink and validate
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -41,7 +41,7 @@ jobs:
 
       - name: Set up Python
         if: steps.bump.outputs.changed == 'true'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -68,7 +68,7 @@ jobs:
 
       - name: Open a pull request with the bump
         if: steps.bump.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           branch: auto/bump-opentepes
           delete-branch: true
