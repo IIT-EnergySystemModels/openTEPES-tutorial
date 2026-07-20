@@ -4,6 +4,15 @@ name: Test Binder Build
 # broken environment.yml, postBuild, or submodule is caught before users hit it.
 # The plain conda build used before did not go through repo2docker and missed,
 # for example, the Anaconda "defaults" channel terms-of-service failure.
+#
+# Two jobs:
+#   binder-build         builds the committed gitlink (what mybinder serves) on
+#                        every PR and push.
+#   binder-build-master  builds against the current openTEPES master tip, on push
+#                        to main only. It gives earlier warning of upstream breakage
+#                        than the weekly bump job, without turning unrelated PRs red
+#                        when master drifts. Keep its notebook list in sync with
+#                        binder-build and with bump-opentepes-submodule.yml.
 
 on:
   pull_request:
@@ -68,3 +77,56 @@ jobs:
       - name: Summary
         if: success()
         run: echo "Binder image built with repo2docker and the tutorial notebooks ran successfully."
+
+  binder-build-master:
+    # Only on push to main. Builds against the openTEPES master tip so upstream
+    # breakage shows up here, between the weekly runs of bump-opentepes-submodule.yml,
+    # rather than only on the Monday schedule. Not run on PRs, so a PR unrelated to
+    # openTEPES is never failed by master drifting.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    name: Build the Binder image against openTEPES master tip
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Move the gitlink to openTEPES master tip
+        run: |
+          # --remote follows the branch declared in .gitmodules (master).
+          git submodule update --remote --recursive external/openTEPES
+          echo "openTEPES at $(git -C external/openTEPES rev-parse --short HEAD)"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install jupyter-repo2docker
+        run: pip install jupyter-repo2docker
+
+      - name: Build the Binder image (same path mybinder.org uses)
+        run: |
+          jupyter-repo2docker --no-run --image-name opentepes-tutorial:master .
+
+      - name: Run the tutorial notebooks inside the built image
+        run: |
+          # repo2docker builds the local context, so it picks up the bumped submodule
+          # commit without a push. Keep this notebook list in sync with binder-build.
+          jupyter-repo2docker --image-name opentepes-tutorial:master . \
+            bash -lc 'jupyter nbconvert --to notebook --execute \
+              --ExecutePreprocessor.timeout=900 --output-dir /tmp/executed \
+              notebooks/0*.ipynb \
+              notebooks/1.3-openTEPES-Running-StepByStep.ipynb \
+              notebooks/2.1-Comparison.ipynb \
+              notebooks/3.1-LoadLevelAggregation_TSAM.ipynb \
+              notebooks/4.*.ipynb \
+              notebooks/5.*.ipynb'
+
+      - name: Summary
+        if: success()
+        run: echo "Binder image built against openTEPES master tip and the tutorial notebooks ran successfully."
